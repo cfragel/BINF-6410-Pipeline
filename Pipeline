@@ -85,3 +85,4 @@ exec &> bwa.log
 				printf There is a problem in the alignment step
 				exit 1
 		fi
+exec >/dev/tty
