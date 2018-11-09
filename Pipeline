@@ -25,11 +25,11 @@ echo "$varname, could you please tell me where is your fastq file?"
 read FASTQ
 DATA=$FASTQ
 echo
-echo "Great, can you help me to find Sabre in your PC? (please give me its path)"
+#echo "Great, can you help me to find Sabre in your PC? (please give me its path)"
 
-read SABRE
-TOOL=$SABRE
-echo
+#read SABRE
+#TOOL=$SABRE
+#echo
 echo "You are doing great, now I need path for the barcodes"
 read BAR
 BARCODE=$BAR
@@ -50,4 +50,4 @@ exec &> sabre.log
 
 # Run the program
 
-$TOOL se -f $DATA -b $BARCODE -u unk.fastq
+$sabre se -f $DATA -b $BARCODE -u unk.fastq
