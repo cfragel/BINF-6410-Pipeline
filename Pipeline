@@ -1,1 +1,53 @@
+#!/bin/bash
 #This is where the pipeline begins.
+
+#Greetinh
+echo
+echo "<============Welcome to StarRRS=================>"
+echo
+
+# Ask the user for their name
+echo
+echo "Hello, who am I talking to?"
+read varname
+echo
+echo "It\'s nice to meet you $varname, thank for using StarRRS"
+
+# Add start time
+TIMESTAMP=$(date +%Y-%m-%d_%Hh%Mm%Ss)
+
+echo
+echo "Starting time: $TIMESTAMP"
+echo
+
+echo "$varname, could you please tell me where is your fastq file?"
+
+read FASTQ
+DATA=$FASTQ
+echo
+echo "Great, can you help me to find Sabre in your PC? (please give me its path)"
+
+read SABRE
+TOOL=$SABRE
+echo
+echo "You are doing great, now I need path for the barcodes"
+read BAR
+BARCODE=$BAR
+echo
+echo "$varname, I will create a new directory for your demultiplexed data. Its name is NGS"
+echo
+
+mkdir NGS
+
+# Change path
+
+cd NGS
+
+# Create log file for the program
+
+echo "I will create a log file for this analysis that you can find it in NGS directory"
+exec &> sabre.log
+
+# Run the program
+
+$TOOL se -f $DATA -b $BARCODE -u unk.fastq
