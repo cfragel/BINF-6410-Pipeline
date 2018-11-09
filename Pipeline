@@ -72,8 +72,10 @@ exec >/dev/tty
 
 
 ##########################################
-REF
-read REF
+echo "Starting Mapping!"
+echo "Please enter the path to your reference genome."
+read Reference
+REF=$Reference
 THR=2
 
 exec &> bwa.log
