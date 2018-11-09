@@ -51,17 +51,21 @@ exec &> sabre.log
 # Run the program
 
 sabre se -f $DATA -b $BARCODE -u unk.fastq
+exec >/dev/tty
 
 #################Cutadapt####################
-#CPU=1
-#echo "User, please enter the number of CPU"
-#read CPU
+
+
+CPU=1
+echo "User, please enter the number of CPU"
+read CPU
 ADAP=AGATCGGAA
 exec &> cutadapt.log
-parallel -j 4 cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | sed 's/.fq//')
+parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | sed 's/.fq//')
 	if [ $? -ne 0 ]
 		then
 			printf There is error in the cutadapt
 			exit 1
 	fi
 
+exec >/dev/tty
