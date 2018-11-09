@@ -45,7 +45,7 @@ cd NGS
 
 # Create log file for the program
 
-echo "I will create a log file for this analysis that you can find it in NGS directory"
+echo "I will create a sabre log file for this analysis that you can find it in NGS directory"
 exec &> sabre.log
 
 # Run the program
