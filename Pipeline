@@ -1,7 +1,7 @@
 #!/bin/bash
 #This is where the pipeline begins.
 
-#Greetinh
+#Greeting
 echo
 echo "<============Welcome to StarRRS=================>"
 echo
@@ -9,32 +9,30 @@ echo
 # Ask the user for their name
 echo
 echo "Hello, who am I talking to?"
-read varname
+read name
 echo
-echo "It\'s nice to meet you $varname, thank for using StarRRS"
+echo "Nice to meet you $name, thank you for using StarRRS"
 
 # Add start time
-TIMESTAMP=$(date +%Y-%m-%d_%Hh%Mm%Ss)
+STARTING_TIME=$(date +%Y-%m-%d_%Hh%Mm%Ss)
 
 echo
-echo "Starting time: $TIMESTAMP"
+echo "Starting time: $STARTING_TIME"
 echo
 
-echo "$varname, could you please tell me where is your fastq file?"
+echo "$name, could you please tell me where is your fastq file?"
 
-read FASTQ
-DATA=$FASTQ
+read FASTQ_File
+
+DATA=$FASTQ_File
 echo
-#echo "Great, can you help me to find Sabre in your PC? (please give me its path)"
 
-#read SABRE
-#TOOL=$SABRE
-#echo
 echo "You are doing great, now I need path for the barcodes"
 read BAR
 BARCODE=$BAR
 echo
-echo "$varname, I will create a new directory for your demultiplexed data. Its name is NGS"
+
+echo "$name, I will create a new directory for your demultiplexed data. Its name is NGS"
 echo
 
 mkdir NGS
@@ -43,7 +41,10 @@ mkdir NGS
 
 cd NGS
 
-# Create log file for the program
+#########SABRE#######
+echo "STARTING SABRE!"
+
+# Create log file for this program
 
 echo "I will create a sabre log file for this analysis that you can find it in NGS directory"
 exec &> sabre.log
@@ -51,16 +52,25 @@ exec &> sabre.log
 # Run the program
 
 sabre se -f $DATA -b $BARCODE -u unk.fastq
+
 exec >/dev/tty
 
 #################Cutadapt####################
 
 echo "Starting Cutadapt!"
+
 CPU=1
-echo "User, please enter the number of CPU"
+
+echo "$name, please enter the number of CPU. It is good to enter maximum number of CPU's you have for faster analysis"
 read CPU
+
+#Sequence of Adapter
 ADAP=AGATCGGAA
+
+echo "I will create a cutadapt log file for this analysis that you can find in NGS directory"
 exec &> cutadapt.log
+
+#Running the program
 parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | sed 's/.fq//')
 	if [ $? -ne 0 ]
 		then
@@ -71,62 +81,62 @@ parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | se
 exec >/dev/tty
 
 
-##########################################
+##################MAPPING########################
 echo "Starting Mapping!"
+
 echo "Please enter the path to your reference genome."
+
 read Reference
 REF=$Reference
-THR=2
 
+#Initializing thread
+THR=1
+echo "$name, please enter the number of threads. It is good to enter 2 or more as per your machine's configuration.
+read THR
+echo "I will create a bwa log file for this analysis that you can find in NGS directory"
 exec &> bwa.log
-		parallel -j $CPU bwa mem -t $THR $REF {}.fastq ">" {}.sam ::: $(ls -1 *.fastq | sed 's/.fastq//')
-		if [ $? -ne 0 ]
-			then 
-				printf There is a problem in the alignment step
-				exit 1
+# Running the program
+parallel -j $CPU bwa mem -t $THR $REF {}.fastq ">" {}.sam ::: $(ls -1 *.fastq | sed 's/.fastq//')
+	if [ $? -ne 0 ]
+		then 
+			printf There is a problem in the alignment step
+			exit 1
 		fi
 exec >/dev/tty
 
-######################################
+###########Conversion SAM TO BAM###########################
+echo "SAM to BAM Conversion"
 # create a log file
+echo "I will create a convert log file for this analysis that you can find in NGS directory"
 exec &> convert.log
-
-# convert SAM format to BAM format
-
+# Running the program in 4 steps.
+#Step 1: convert SAM format to BAM format.
 parallel -j $CPU samtools view -b -S -h {}.sam ">" {}.temp.bam ::: $(ls -1 *.sam | sed 's/.sam//')
-		if [ $? -ne 0 ]
-			then 
-				printf "There is a problem in the samtools-view step"
-				exit 1
-		fi
-# sort BAM files
-
+	if [ $? -ne 0 ]
+		then 
+			printf "There is a problem in the samtools-view step"
+			exit 1
+	fi
+	
+	
+#Step 2: Sorting of BAM files
 parallel -j $CPU samtools sort {}.temp.bam -o {}.sort.bam ::: $(ls -1 *.temp.bam | sed 's/.temp.bam//')
-		if [ $? -ne 0 ]
-			then 
-				printf "There is a problem in the samtools-sort step"
-				exit 1
-		fi
-
-# indexing of BAM files
+	
+#Step 3: Indexing of BAM files
 parallel -j $CPU samtools index {} ::: $(ls -1 *.sort.bam)
-		if [ $? -ne 0 ]
-			then 
-				printf "There is a problem in the samtools-index step"
-				exit 1
-		fi
-
-# create a list of BAM files with path
-
+	
+#Step 4: Creating a list of BAM files with path
 for i in $(ls -1 *.sort.bam)
-			do
-				printf "$PWD/${i}\n" >> "bamlist"
-				if [ $? -ne 0 ]
-					then 
-					printf "There is a problem in the production of the bam file list"
+		do
+			printf "$PWD/${i}\n" >> "bamlist"
+			if [ $? -ne 0 ]
+				then 
+	
+	printf "There is a problem in the production of the bam file list"
 					exit 1
-				fi
+			fi
 			done
+# Well All steps are completed			
 exec >/dev/tty
 
 #######################################
