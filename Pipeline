@@ -54,7 +54,7 @@ sabre se -f $DATA -b $BARCODE -u unk.fastq
 
 #################Cutadapt####################
 CPU=1
-read $CPU
+read CPU
 ADAP=AGATCGGAA
 exec &> cutadapt.log
 parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | sed 's/.fq//')
