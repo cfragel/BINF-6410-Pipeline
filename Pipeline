@@ -73,7 +73,7 @@ exec >/dev/tty
 
 ##########################################
 REF=/Users/hzmvet/Pipeline/refgenome/Gmax_275_v2.0.fa
-CPU=3
+read REF
 THR=2
 
 exec &> bwa.log
