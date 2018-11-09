@@ -55,7 +55,7 @@ exec >/dev/tty
 
 #################Cutadapt####################
 
-
+echo "Starting Cutadapt!"
 CPU=1
 echo "User, please enter the number of CPU"
 read CPU
