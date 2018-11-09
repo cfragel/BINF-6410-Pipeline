@@ -127,3 +127,4 @@ for i in $(ls -1 *.sort.bam)
 					exit 1
 				fi
 			done
+exec >/dev/tty
