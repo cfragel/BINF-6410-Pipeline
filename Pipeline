@@ -34,11 +34,13 @@ echo "STARTING SABRE!"
 echo "I will create a sabre log file for this analysis that you can find it in Results directory"
 exec &> sabre.log
 
+
 # Run the program
 
 sabre se -f $DATA -b $BARCODE -u unk.fastq
 
 exec >/dev/tty
+echo
 }
 
 ########################
@@ -61,6 +63,7 @@ parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | se
 	fi
 
 exec >/dev/tty
+echo
 }
 
 ##########################
@@ -78,6 +81,7 @@ parallel -j $CPU bwa mem -t $THR $REF {}.fastq ">" {}.sam ::: $(ls -1 *.fastq | 
 			exit 1
 		fi
 exec >/dev/tty
+echo
 }
 
 ##########################
@@ -116,6 +120,7 @@ for i in $(ls -1 *.sort.bam)
 			done
 # Well All steps are completed			
 exec >/dev/tty
+echo
 }
 
 ##########################
@@ -140,6 +145,7 @@ bcftools call -mv variants.bcf > variants.vcf
                 fi
 		
 exec >/dev/tty
+echo
 }
 
 ##########################
@@ -190,9 +196,12 @@ echo "Please enter the path to your reference genome."
 read Reference
 REF=$Reference
 
+echo
+
 echo "$name, please enter the number of CPU. It is good to enter maximum number of CPU's you have for faster analysis"
 read CPU
 
+echo
 
 #Initializing thread
 echo "$name, please enter the number of threads. It is good to enter 2 or more as per your machine's configuration."
@@ -239,6 +248,7 @@ OurVcf
 
 
 echo "Ending time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
+echo
 ENDING_TIME=$(date -u +%s)
 ELAPSED_TIME="$[$ENDING_TIME-$STARTING_TIME]"
 echo "The Elapsed time is: $ELAPSED_TIME seconds"
