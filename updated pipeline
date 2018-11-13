@@ -70,9 +70,10 @@ echo "Starting Cutadapt!"
 #Sequence of Adapter
 echo "Do you want to initialize adapter for running cutadapt?.....(Yes/No)"
 echo "Yes = Initializing adapter by user and No = Default adapter i.e AGATCGGAA"
-Init=q
+read Init
 until [ "$Init" = "Yes" ] || [ "$Init" = "No" ] 
 do
+echo "Enter the correct option Yes/No"
 read Init
 done
 if [ $Init = "Yes" ]; then
@@ -276,6 +277,7 @@ echo "Do you want to run the pipeline using the default options ... (y/n)"
 read ANSWER
 until [ "$ANSWER" = "y" ] || [ "$ANSWER" = "n" ] 
 do
+	echo "Enter the correct option y/n"
 	read ANSWER
 done
 
@@ -336,7 +338,7 @@ case $ANSWER in
 		read STEP
 		until [ "$STEP" = "Sabre" ] || [ "$STEP" = "Cutadapt" ] || [ "$STEP" = "mapping" ] || [ "$STEP" = "sam2bam" ] || [ "$STEP" = "VCF" ]
 		do
-			echo "Please give the correct option"
+			echo "Please give the correct option Sabre/Cutadapt/mapping/sam2bam/VCF"
 			read STEP
 		done
 		
@@ -370,9 +372,10 @@ case $ANSWER in
 			
 			echo "Do you want to continue to cutadapt??...(Y/N)"
 			
-			Answer1=q
+			read Answer1
 			until [ "$Answer1" = "Y" ] || [ "$Answer1" = "N" ] 
 			do
+				echo "Enter the correct option Y/N"
 				read Answer1
 			done
 			
@@ -382,10 +385,11 @@ case $ANSWER in
 				Cutadapt_func
 				
 				echo "Do you want to continue to do Mapping??...(Yes/No)"
-				Answer2=q
+				read Answer2
 				until [ "$Answer2" = "Yes" ] || [ "$Answer2" = "No" ] 
 				do
-				read Answer2
+					echo "Enter the correct option Yes/No"
+					read Answer2
 				done
 				
 				if [ $Answer2 = "Yes" ]; then
@@ -395,10 +399,11 @@ case $ANSWER in
 					Bwa_func
 					
 					echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
-					Answer4=q
+					read Answer4
 					until [ "$Answer4" = "YES" ] || [ "$Answer4" = "NO" ] 
 					do
-					read Answer4
+						echo "Please Enter the correct option YES/NO"
+						read Answer4
 					done
 					
 					if [ $Answer4 = "YES" ]; then
@@ -406,10 +411,11 @@ case $ANSWER in
 						Samtools_func
 							
 						echo "Do you want to continue to do VCF??...(y/n)"
-						Answer5=q
+						read Answer5
 						until [ "$Answer5" = "y" ] || [ "$Answer4" = "n" ] 
 						do
-						read Answer5
+							echo "Enter the correct option y/n"
+							read Answer5
 						done
 							
 						if [ $Answer5 = "y" ]; then
@@ -479,10 +485,11 @@ case $ANSWER in
 			Cutadapt_func
 			
 			echo "Do you want to continue to do Mapping??...(Yes/No)"
-				Ans=q
+				read Ans
 				until [ "$Ans" = "Yes" ] || [ "$Ans" = "No" ] 
 				do
-				read Ans
+					echo "Enter the correct option Yes/No"
+					read Ans
 				done
 				
 				if [ $Ans = "Yes" ]; then
@@ -492,10 +499,11 @@ case $ANSWER in
 					Bwa_func
 					
 					echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
-					Ans1=q
+					read Ans1
 					until [ "$Ans1" = "YES" ] || [ "$Ans1" = "NO" ] 
 					do
-					read Ans1
+						echo "Enter the correct option YES/NO"
+						read Ans1
 					done
 					
 					if [ $Ans1 = "YES" ]; then
@@ -503,10 +511,11 @@ case $ANSWER in
 						Samtools_func
 							
 						echo "Do you want to continue to do VCF??...(y/n)"
-						Ans2=q
+						read Ans2
 						until [ "$Ans2" = "y" ] || [ "$Ans2" = "n" ] 
 						do
-						read Ans2
+							echo "Enter the correct option y/n"
+							read Ans2
 						done
 							
 						if [ $Ans2 = "y" ]; then
@@ -573,9 +582,10 @@ case $ANSWER in
 			Bwa_func
 			
 			echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
-			Label=q
+			read Label
 			until [ "$Label" = "YES" ] || [ "$Label" = "NO" ] 
 			do
+				echo "Enter the correct option YES/NO"
 				read Label
 			done
 					
@@ -584,9 +594,10 @@ case $ANSWER in
 				Samtools_func
 							
 				echo "Do you want to continue to do VCF??...(y/n)"
-				Label1=q
+				read Label1
 				until [ "$Label1" = "y" ] || [ "$Label1" = "n" ] 
 				do
+					echo"Enter the correct option y/n"
 					read Label1
 				done
 							
@@ -645,9 +656,10 @@ case $ANSWER in
 			Samtools_func
 							
 			echo "Do you want to continue to do VCF??...(y/n)"
-			Assign=q
+			read Assign
 			until [ "$Assign" = "y" ] || [ "$Assign" = "n" ] 
 			do
+				echo "Enter the correct option y/n"
 				read Assign
 			done
 							
