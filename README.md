@@ -16,7 +16,6 @@ The CHMK Pipeline is designed to find variation in genomic sequence data. In ord
 
 The CHMK Pipeline has many options for the user. If you do not chose the default settings when running the pipeline, you may start and stop at any given point along the pipeline. For example: you may already have SAM files. In this case you can tell the program that you would like to start at the SAM to BAM option. This will allow you to convert your files and the go on to variant calling. 
 
-Additionally, the CHMK Pipeline give you the option to use both single or paired end reads. It is important to note that the default settings only consider single-end reads. In order to work with paired-end reads one must answer "n" to the option of running the default procedure. The program will then ask if you want to use paired-end reads further along in the options.
 
 
 
@@ -24,14 +23,7 @@ Additionally, the CHMK Pipeline give you the option to use both single or paired
 
 **Sabre**
 
-
-Sabre is a tools that demultiplexes barcode reads into separate files. Sabre allows this pipeline to accept either single or paired end reads for analysis. 
-
-The pe versus se option when executing sabre is what allows for the option of using single or paired end reads.
-
-sabre pe -f $DATA -b $BARCODE -u unk.fastq
-
-sabre se -f $DATA -b $BARCODE -u unk.fastq
+The tool Sabre is used to demultiplex barcoded reads. Sabre takes in FASTQ files and produces a set of demultiplexed FASTQ files. The Sabre tool can be used for both paired or single-end reads. Unfortunately, the CHMK Pipeline is only able to support data single-end reads.
 
 **Cutadapt**
 
