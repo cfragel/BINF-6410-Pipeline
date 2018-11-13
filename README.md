@@ -14,7 +14,7 @@ kvijayak, Muskan3195, cfragel, hzamankh
 
 The CHMK Pipeline is designed to find variation in genomic sequence data. In order to do this, CHMK Pipeline takes in a FASTQ file, aligns it to a reference genome, and produces list of BAM files containing all the variation for each sequence of interest. 
 
-The CHMK Pipeline has many options for the user. If you do not chose the default settings when running the pipeline, you may start and stop at any given point along the pipeline. For example: you may already have SAM files. In this case you can tell the program that you would like to start at the SAM to BAM option. This will allow you to convert your files and the go on to variant calling. 
+The CHMK Pipeline has many options for the user. If you do not chose the default settings when running the pipeline, you may start and stop at any given point along the pipeline. For example: you may already have SAM files. In this case you can tell the program that you would like to start at the SAM to BAM option. This will allow you to convert your files and then go on to variant calling. 
 
 
 
