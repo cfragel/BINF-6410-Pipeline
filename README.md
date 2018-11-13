@@ -24,6 +24,7 @@ Sabre is a tools that demultiplexes barcode reads into separate files. Sabre all
 The pe versus se option when executing sabre is what allows for the option of using single or paired end reads.
 
 sabre pe -f $DATA -b $BARCODE -u unk.fastq
+
 sabre se -f $DATA -b $BARCODE -u unk.fastq
 
 Cutadapt
@@ -46,23 +47,32 @@ The variant calling step uses VCFtools to find and report any variation in the g
 The following tools must be installed on your system in order to successfully run this pipeline:
 
 Sabre
+
 (https://github.com/najoshi/sabre)
 
 Cutadapt
 
 To see if the command worked type 'cutadapt'
+
 (https://cutadapt.readthedocs.io/en/stable/installation.html)
 
 BWA
+
 (http://bio-bwa.sourceforge.net/)
+
 (https://github.com/lh3/bwa)
+
 Li H. and Durbin R. (2010) Fast and accurate long-read alignment with Burrows-Wheeler Transform. Bioinformatics, Epub. [PMID: 20080505]
 
 
 SAMtools/BCFtools/HTSlib
+
 The necessary information to install SAMtools, BCFtools, and HTSlib is located at the link below.
+
 (http://www.htslib.org/)
 
 VCFtools
+
 (http://vcftools.sourceforge.net/)
+
 The Variant Call Format and VCFtools, Petr Danecek, Adam Auton, Goncalo Abecasis, Cornelis A. Albers, Eric Banks, Mark A. DePristo, Robert Handsaker, Gerton Lunter, Gabor Marth, Stephen T. Sherry, Gilean McVean, Richard Durbin and 1000 Genomes Project Analysis Group, Bioinformatics, 2011
