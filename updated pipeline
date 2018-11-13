@@ -1,0 +1,689 @@
+#!/bin/bash
+
+CPU=2
+THR=2
+
+set -e
+
+#########FUNCTION FOR START TIME###############
+
+convertsecs() {
+ ((h=${1}/3600))
+ ((m=(${1}%3600)/60))
+ ((s=${1}%60))
+ printf "%02d:%02d:%02d\n" $h $m $s
+}
+
+########FUNCTION FOR CALLING FASTQ AND BARCODE FILES##################
+
+Getfastq () {
+#To read fastq files
+echo "$name, could you please tell me where is your fastq file?"
+read FASTQ_File
+DATA=$FASTQ_File
+echo
+
+#To read barcodes
+echo "You are doing great, now I need path for the barcodes"
+read BAR
+BARCODE=$BAR
+echo
+}
+
+##########FUNCTION FOR CALLING REFERENCE GENOME################
+
+GetRefGene () {
+echo "$name, Please enter the path to your reference genome."
+
+read Reference
+REF=$Reference
+
+echo
+
+}
+
+#############FUNCTION FOR SABRE (PAIR END READS)##################
+Sabre_pe() {
+
+echo "STARTING SABRE!(PAIR END)"
+
+# Create log file for this program
+echo "I will create a sabre log file for this analysis that you can find it in $RESPATH directory"
+exec &> sabre_pe.log
+
+
+# Run the program
+sabre pe -f $DATA -b $BARCODE -u unk.fastq
+
+exec >/dev/tty
+echo
+}
+
+#############FUNCTION FOR SABRE (SINGLE END READS)##################
+Sabre_se() {
+
+echo "STARTING SABRE!(SINGLE END)"
+
+# Create log file for this program
+echo "I will create a sabre log file for this analysis that you can find it in $RESPATH directory"
+exec &> sabre_se.log
+
+
+# Run the program
+sabre se -f $DATA -b $BARCODE -u unk.fastq
+
+exec >/dev/tty
+echo
+}
+
+##########FUNCTION FOR CUTADAPT##############
+
+Cutadapt_func () {
+echo "Starting Cutadapt!"
+
+#Sequence of Adapter
+ADAP=AGATCGGAA
+
+# Create log file
+echo "I will create a cutadapt log file for this analysis that you can find in $RESPATH directory"
+exec &> cutadapt.log
+
+#Running the program
+parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | sed 's/.fq//')
+	if [ $? -ne 0 ]
+		then
+			printf There is error in the cutadapt
+			exit 1
+	fi
+
+exec >/dev/tty
+echo
+}
+
+##########FUNCTION FOR MAPPING################
+
+Bwa_func () {
+echo "Starting Mapping!"
+
+# Create log file
+echo "I will create a bwa log file for this analysis that you can find in $RESPATH directory"
+exec &> bwa.log
+
+# Running the program
+parallel -j $CPU bwa mem -t $THR $REF {}.fastq ">" {}.sam ::: $(ls -1 *.fastq | sed 's/.fastq//')
+	if [ $? -ne 0 ]
+		then 
+			printf There is a problem in the alignment step
+			exit 1
+		fi
+exec >/dev/tty
+echo
+}
+
+########FUNCTION FOR SAM TO BAM CONVERSION##################
+
+Samtools_func () {
+echo "SAM to BAM Conversion"
+
+# create a log file
+echo "I will create a convert log file for this analysis that you can find in $RESPATH directory"
+exec &> convert.log
+
+# Running the program in 4 steps.
+#Step 1: convert SAM format to BAM format.
+parallel -j $CPU samtools view -b -S -h {}.sam ">" {}.temp.bam ::: $(ls -1 *.sam | sed 's/.sam//')
+	if [ $? -ne 0 ]
+		then 
+			printf "There is a problem in the samtools-view step"
+			exit 1
+	fi
+	
+	
+#Step 2: Sorting of BAM files
+parallel -j $CPU samtools sort {}.temp.bam -o {}.sort.bam ::: $(ls -1 *.temp.bam | sed 's/.temp.bam//')
+	
+#Step 3: Indexing of BAM files
+parallel -j $CPU samtools index {} ::: $(ls -1 *.sort.bam)
+	
+#Step 4: Creating a list of BAM files with path
+for i in $(ls -1 *.sort.bam)
+		do
+			printf "$PWD/${i}\n" >> "bamlist"
+			if [ $? -ne 0 ]
+				then 
+	
+	printf "There is a problem in the production of the bam file list"
+					exit 1
+			fi
+			done
+
+# Well All steps are completed			
+exec >/dev/tty
+echo
+}
+
+############FUNCTION FOR VCF##############
+
+Vcf_func () {
+echo "Starting variant Calling!"
+OUT=variantcalling
+
+# create a log file
+echo "I will create a sam_var
+log file for this analysis that you can find in $RESPATH directory"
+exec &> samt_var.log
+
+#Running the program 
+samtools mpileup -g -f $REF -b $PWD/bamlist > variants.bcf
+	if [ $? -ne 0 ]
+                        then
+                                printf "There is a problem at the samtools_mpileup step"
+                                exit 1
+                fi
+
+bcftools call -mv variants.bcf > variants.vcf
+	if [ $? -ne 0 ]
+                        then
+                                printf "There is a problem at the bcf2vcf step"
+                                exit 1
+                fi
+		
+exec >/dev/tty
+echo
+}
+
+###################FUNCTION FOR TIME CALCULATION##############
+time_stats() {
+#Print the completion time of pipeline 
+echo "Ending time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
+echo
+ENDING_TIME=$(date -u +%s)
+ELAPSED_TIME="$[$ENDING_TIME-$STARTING_TIME]"
+echo "The Elapsed time is: $ELAPSED_TIME seconds"
+echo "or"
+echo $(convertsecs $ELAPSED_TIME)
+echo
+echo "Thank you!! Hope you had a good time using our pipeline!!"
+}
+
+########STARTING OF PIPELINE##################
+echo
+echo "<==============Welcome to CHMK=================>"
+echo
+echo "This Pipeline made by Christina, Hamed, Muskan and Karuna as class assignment"
+echo
+echo "CHMK Pipeline use sabre, cutadapt, bwa, samtools, bcftools"
+echo
+
+# Ask the user for their name
+echo "Hello, who am I talking to?"
+read name
+echo
+
+echo "Nice to meet you $name, thank you for choosing CHMK Pipeline"
+echo
+
+echo "The Current time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
+echo
+
+#Initializing CPU's
+echo "$name, please enter the number of CPU. It is good to enter maximum number of CPU's you have for faster analysis"
+read CPU
+echo
+
+#Initializing thread
+echo "$name, please enter the number of threads. It is good to enter 2 or more as per your machine's configuration."
+read THR
+echo
+
+
+# TO show starting time of pipeline
+STARTING_TIME=$(date -u +%s)
+echo
+echo "Starting time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
+echo
+
+#Choose the option according to your requirement to run pipeline.
+echo "Do you want to run the pipeline using the default options ... (y/n)"
+echo
+
+ANSWER=q
+until [ "$ANSWER" = "y" ] || [ "$ANSWER" = "n" ] 
+do
+	read ANSWER
+done
+
+
+case $ANSWER in
+	y)
+		echo "The default pipeline option is only for single end reads"
+		#Assigning name to result directory
+		echo "Please assign a name for the Result directory where all your results will be saved"
+		read RESPATH
+		echo
+		
+		#Creating a directory for results
+		mkdir $RESPATH
+		#Assigning the absolute path of the result directory to a variable
+		resultpath=$PWD
+		echo "$name, I have created a new directory for your results. Its name is $RESPATH"
+		echo
+		
+		# Change path to store results by calling the variable containing the absolute path of the results directory
+		cd $resultpath/$RESPATH
+		
+		#CALLING Getfastq FUNCTION  FOR READING FASTQ FILES
+		Getfastq
+		
+		########CALLING FUNCTION FOR SABRE################
+		Sabre_se
+		
+		##########CALLING FUNCTION FOR CUTADAPT##############
+		Cutadapt_func
+
+		#CALLING FUNCTION FOR REFERENCE GENOME TO DO MAPPING
+		GetRefGene
+		
+		##########CALLING FUNCTION FOR MAPPING################
+		Bwa_func
+
+		########CALLING FUNCTION FOR SAM TO BAM CONVERSION##################
+		Samtools_func
+		
+		############CALLING FUNCTION FOR VCF##############
+		Vcf_func
+		
+		###########CALLING FUNCTION FOR TIME CALCULATION#########
+		time_stats
+		
+		;;
+	n)
+		echo "Please tell us the step you want to start with...(Sabre/Cutadapt/mapping/sam2bam/VCF)"
+		
+		STEP=q
+		until [ "$STEP" = "Sabre" ] || [ "$STEP" = "Cutadapt" ] || [ "$STEP" = "mapping" ] || [ "$STEP" = "sam2bam" ] || [ "$STEP" = "VCF" ]
+		do
+			read STEP
+		done
+		
+		case $STEP in
+		
+		Sabre)
+			
+			#Calling function for reading FastQ files and barcodes
+			Getfastq
+			
+			#Assigning name to result directory
+			echo "Please assign a name for the Result directory where all your results will be saved"
+			read RESPATH
+			echo
+		
+			#Creating a directory for results
+			mkdir $RESPATH
+			#Assigning the absolute path of the result directory to a variable
+			resultpath1=$PWD
+			echo "$name, I have created a new directory for your results. Its name is $RESPATH"
+			echo
+			
+			echo "Do you want to run sabre for single end or pair end reads??..(s/p)"
+			echo
+			
+			READS=q
+			until [ "$READS" = "s" ] || [ "$READS" = "p" ] 
+			do
+			read READS
+			done
+			
+			if [ $READS = "s" ]; then
+			
+				# Change path to store results by calling the variable containing the absolute path of the results directory
+				cd $resultpath1/$RESPATH
+				#Calling function for sabre single end reads
+				Sabre_se
+			else 
+				# Change path to store results by calling the variable containing the absolute path of the results directory
+				cd $resultpath1/$RESPATH
+				#Calling function for sabre pair end reads
+				Sabre_pe
+				
+			fi
+			
+			echo "Do you want to continue to cutadapt??...(Y/N)"
+			Answer1=q
+			until [ "$Answer1" = "Y" ] || [ "$Answer1" = "N" ] 
+			do
+				read Answer1
+			done
+			
+			if [ $Answer1 = "Y" ]; then
+				#Calling function for cutadapt
+				Cutadapt_func
+				
+				echo "Do you want to continue to do Mapping??...(Yes/No)"
+				Answer2=q
+				until [ "$Answer2" = "Yes" ] || [ "$Answer2" = "No" ] 
+				do
+				read Answer2
+				done
+				
+				if [ $Answer2 = "Yes" ]; then
+					#CALLING FUNCTION FOR REFERENCE GENOME TO DO MAPPING
+					GetRefGene
+					#Calling function for Mapping
+					Bwa_func
+					
+					echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
+					Answer4=q
+					until [ "$Answer4" = "YES" ] || [ "$Answer4" = "NO" ] 
+					do
+					read Answer4
+					done
+					
+					if [ $Answer4 = "Yes" ]; then
+						#Calling function for SAM to BAM conversion
+						Samtools_func
+							
+						echo "Do you want to continue to do VCF??...(y/n)"
+						Answer5=q
+						until [ "$Answer5" = "y" ] || [ "$Answer4" = "n" ] 
+						do
+						read Answer5
+						done
+							
+						if [ $Answer5 = "y" ]; then
+							#Calling function for VCF
+							Vcf_func
+							
+							echo "You have now got the desired output by using this pipeline"
+							
+							#Calling function for time calculation
+							time_stats
+								
+						else 
+							echo "You have now got the desired output by using this pipeline"
+								
+							#Calling function for time calculation
+							time_stats
+						fi
+					else
+						echo "You have now got the desired output by using this pipeline"
+								
+						#Calling function for time calculation
+						time_stats
+					fi
+				else
+					echo "You have now got the desired output by using this pipeline"
+								
+					#Calling function for time calculation
+					time_stats
+				fi
+			else
+				echo "You have now got the desired output by using this pipeline"
+								
+				#Calling function for time calculation
+				time_stats
+			fi				
+		
+			;;
+				
+		Cutadapt)
+			
+			echo "Please enter the full path of the directory containing your fq files"
+			read NEWPATH
+			
+			#Assigning name to result directory
+			echo "Please assign a name for the Result directory where all your results will be saved along with your fq files"
+			read RESPATH
+			echo
+		
+			#Creating a directory for results
+			mkdir $RESPATH
+			#Assigning the absolute path of the result directory to a variable
+			resultpath2=$PWD
+			echo "$name, I have created a new directory for your results." 
+			echo "Its name is $RESPATH whose path is $resultpath2"
+			echo
+			
+			# Change path
+			cd $NEWPATH
+			
+			# Move the .fq files to the results directory 
+			mv *.fq $resultpath2/$RESPATH
+			
+			# Change path to result directory
+			cd $resultpath2/$RESPATH
+			
+			#Calling function for cutadapt
+			Cutadapt_func
+			
+			echo "Do you want to continue to do Mapping??...(Yes/No)"
+				Ans=q
+				until [ "$Ans" = "Yes" ] || [ "$Ans" = "No" ] 
+				do
+				read Ans
+				done
+				
+				if [ $Ans = "Yes" ]; then
+					#CALLING FUNCTION FOR REFERENCE GENOME TO DO MAPPING
+					GetRefGene
+					#Calling function for Mapping
+					Bwa_func
+					
+					echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
+					Ans1=q
+					until [ "$Ans1" = "YES" ] || [ "$Ans1" = "NO" ] 
+					do
+					read Ans1
+					done
+					
+					if [ $Ans1 = "Yes" ]; then
+						#Calling function for SAM to BAM conversion
+						Samtools_func
+							
+						echo "Do you want to continue to do VCF??...(y/n)"
+						Ans2=q
+						until [ "$Ans2" = "y" ] || [ "$Ans2" = "n" ] 
+						do
+						read Ans2
+						done
+							
+						if [ $Ans2 = "y" ]; then
+							#Calling function for VCF
+							Vcf_func
+							
+							echo "You have now got the desired output by using this pipeline"
+							
+							#Calling function for time calculation
+							time_stats
+								
+								
+						else 
+							echo "You have now got the desired output by using this pipeline"
+								
+							#Calling function for time calculation
+							time_stats
+						fi
+					else
+						echo "You have now got the desired output by using this pipeline"
+								
+						#Calling function for time calculation
+						time_stats
+					fi
+				else
+					echo "You have now got the desired output by using this pipeline"
+								
+					#Calling function for time calculation
+					time_stats
+				fi
+			
+			;;
+			
+		mapping)		
+			echo "Please enter the full path of the directory containing your .fastq files"
+			read NEWPATH1
+			
+			#Assigning name to result directory
+			echo "Please assign a name for the Result directory where all your results will be saved along with your .fastq files"
+			read RESPATH
+			echo
+		
+			#Creating a directory for results
+			mkdir $RESPATH
+			#Assigning the absolute path of the result directory to a variable
+			resultpath3=$PWD
+			echo "$name, I have created a new directory for your results." 
+			echo "Its name is $RESPATH whose path is $resultpath3"
+			echo
+			
+			# Change path to .fastq files directory
+			cd $NEWPATH1
+			
+			# Move the .fastq files to the results directory 
+			mv *.fastq $resultpath3/$RESPATH
+			
+			#Change path to result directory
+			cd $resultpath3/$RESPATH
+			
+			#CALLING FUNCTION FOR REFERENCE GENOME TO DO MAPPING
+			GetRefGene
+		
+			#CALLING FUNCTION FOR MAPPING
+			Bwa_func
+			
+			echo "Do you want to continue to do conversion from SAM to BAM??...(YES/NO)"
+			Label=q
+			until [ "$Label" = "YES" ] || [ "$Label" = "NO" ] 
+			do
+				read Label
+			done
+					
+			if [ $Label = "Yes" ]; then
+				#Calling function for SAM to BAM conversion
+				Samtools_func
+							
+				echo "Do you want to continue to do VCF??...(y/n)"
+				Label1=q
+				until [ "$Label1" = "y" ] || [ "$Label1" = "n" ] 
+				do
+					read Label1
+				done
+							
+				if [ $Label1 = "y" ]; then
+					#Calling function for VCF
+					Vcf_func
+				
+					echo "You have now got the desired output by using this pipeline"
+							
+					#Calling function for time calculation
+					time_stats
+								
+								
+				else 
+					echo "You have now got the desired output by using this pipeline"
+								
+					#Calling function for time calculation
+					time_stats
+				fi
+			else
+				echo "You have now got the desired output by using this pipeline"
+								
+				#Calling function for time calculation
+				time_stats
+			fi
+			
+			;;
+			
+		sam2bam)
+			echo "Please enter the full path of the directory containing your .sam files"
+			read NEWPATH2
+			
+			#Assigning name to result directory
+			echo "Please assign a name for the Result directory where all your results will be saved along with your .sam files"
+			read RESPATH
+			echo
+		
+			#Creating a directory for results
+			mkdir $RESPATH
+			#Assigning the absolute path of the result directory to a variable
+			resultpath4=$PWD
+			echo "$name, I have created a new directory for your results." 
+			echo "Its name is $RESPATH whose path is $resultpath4"
+			echo
+			
+			# Change path to .sam files directory
+			cd $NEWPATH2
+			
+			# Move the .sam files to the results directory 
+			mv *.sam $resultpath4/$RESPATH
+			
+			#Change path to result directory
+			cd $resultpath4/$RESPATH
+			
+			#Calling function for SAM to BAM conversion
+			Samtools_func
+							
+			echo "Do you want to continue to do VCF??...(y/n)"
+			Assign=q
+			until [ "$Assign" = "y" ] || [ "$Assign" = "n" ] 
+			do
+				read Assign
+			done
+							
+			if [ $Assign = "y" ]; then
+				#Calling function for VCF
+				Vcf_func
+				
+				echo "You have now got the desired output by using this pipeline"
+							
+				#Calling function for time calculation
+				time_stats
+								
+								
+			else 
+				echo "You have now got the desired output by using this pipeline"
+								
+				#Calling function for time calculation
+				time_stats
+			fi
+			;;
+		VCF)
+			
+			echo "Please enter the full path of the directory containing your bamlist"
+			read NEWPATH3
+			
+			echo "Please enter the name of your bamlist"
+			read bamlist
+			
+			#Assigning name to result directory
+			echo "Please assign a name for the Result directory where all your results will be saved along with your $bamlist"
+			read RESPATH
+			echo
+		
+			#Creating a directory for results
+			mkdir $RESPATH
+			#Assigning the absolute path of the result directory to a variable
+			resultpath5=$PWD
+			echo "$name, I have created a new directory for your results." 
+			echo "Its name is $RESPATH whose path is $resultpath5"
+			echo
+			
+			# Change path to directory containing bamlist
+			cd $NEWPATH3
+			
+			# Move the bamlist to the results directory 
+			mv $bamlist $resultpath5/$RESPATH
+			
+			#Change path to result directory
+			cd $resultpath5/$RESPATH
+			mv $bamlist bamlist
+			
+			#Calling function for VCF
+			Vcf_func
+				
+			echo "You have now got the desired output by using this pipeline"
+							
+			#Calling function for time calculation
+			time_stats
+			;;
+		esac
+	esac
