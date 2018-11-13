@@ -323,6 +323,7 @@ case $ANSWER in
 		############CALLING FUNCTION FOR VCF##############
 		Vcf_func
 		
+		echo "$name, successfully completed."
 		###########CALLING FUNCTION FOR TIME CALCULATION#########
 		time_stats
 		
