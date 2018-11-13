@@ -5,6 +5,7 @@ BINF 6410
 University of Guelph
 13 November 2018
 Karuna,Muskan,Christina,Hamed
+kvijayak, Muskan3195, cfragel, hzamankh
 ```
 
 The CHMK Pipeline is designed to find variation in genomic sequence data. In order to do this, CHMK Pipeline takes in a FASTQ file, aligns it to a reference genome, and produces list of BAM files containing all the variation for each sequence of interest. 
