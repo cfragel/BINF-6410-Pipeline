@@ -329,12 +329,18 @@ case $ANSWER in
 		
 		;;
 	n)
+		echo "Please note that this option will run only for single end read files"
+		echo
 		echo "Please tell us the step you want to start with...(Sabre/Cutadapt/mapping/sam2bam/VCF)"
 		
 		STEP=q
 		until [ "$STEP" = "Sabre" ] || [ "$STEP" = "Cutadapt" ] || [ "$STEP" = "mapping" ] || [ "$STEP" = "sam2bam" ] || [ "$STEP" = "VCF" ]
 		do
 			read STEP
+			if [ "$STEP" -ne "Sabre" || "Cutadappt" || "mapping" || "sam2bam" || "VCF" ]
+				then
+					echo "Please give the correct option"
+			fi
 		done
 		
 		case $STEP in
