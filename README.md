@@ -20,6 +20,7 @@ Tools Description:
 
 Sabre
 
+
 Sabre is a tools that demultiplexes barcode reads into separate files. Sabre allows this pipeline to accept either single or paired end reads for analysis. 
 
 The pe versus se option when executing sabre is what allows for the option of using single or paired end reads.
@@ -30,19 +31,25 @@ sabre se -f $DATA -b $BARCODE -u unk.fastq
 
 Cutadapt
 
+
 Cutadapt is a tools that allows the user to remove the adapter from their sequences. The CHMK Pipeline prompts the user to initialize an adapter sequence. However, if the user is unaware of what their adapter's sequence is they can use the default adapter. The default adapter sequence is:  AGATCGGAA.
 
 Mapping
+
 
 The CHMK Pipeline utilizes the Burrow-Wheeler Aligner (BWA) to map the trimmed files, output by Cutadapt onto the reference genome. If the user already has a set of trimmed FASTQ files, they are able to skip directly to this step in the pipeline. This can be done by answering "n" when asked if the user wants to run the default protocol. When asked, the user should enter "mapping" into the program.
 
 SAM to BAM Conversion
 
+
 The SAM to BAM conversion is done using SAMtools. This step is largely reformatting the data so that it can be used for variant calling in the final step of the CHMK Pipeline.
 
 Variant Calling
 
+
 The variant calling step uses VCFtools to find and report any variation in the genomic sequences. The files containing the output of the variant calling step are .vcf files. These files will show up in the directory created by the user at the beginning of the program.
+
+
 
 
 The following tools must be installed on your system in order to successfully run this pipeline:
@@ -51,11 +58,15 @@ Sabre
 
 (https://github.com/najoshi/sabre)
 
+
+
 Cutadapt
 
 To see if the command worked type 'cutadapt'
 
 (https://cutadapt.readthedocs.io/en/stable/installation.html)
+
+
 
 BWA
 
@@ -66,11 +77,14 @@ BWA
 Li H. and Durbin R. (2010) Fast and accurate long-read alignment with Burrows-Wheeler Transform. Bioinformatics, Epub. [PMID: 20080505]
 
 
+
 SAMtools/BCFtools/HTSlib
 
 The necessary information to install SAMtools, BCFtools, and HTSlib is located at the link below.
 
 (http://www.htslib.org/)
+
+
 
 VCFtools
 
