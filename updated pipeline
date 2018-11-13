@@ -86,7 +86,24 @@ Cutadapt_func () {
 echo "Starting Cutadapt!"
 
 #Sequence of Adapter
-ADAP=AGATCGGAA
+echo "Do you want to initialize adapter for running cutadapt?.....(Yes/No)"
+echo "Yes = Initializing adapter by user and No = Default adapter i.e AGATCGGAA"
+Init=q
+until [ "$Init" = "Yes" ] || [ "$Init" = "No" ] 
+do
+read Init
+done
+if [ $Init = "Yes" ]; then
+	#Initialize adapter sequence by user
+	echo "Please, enter the adapter of your choice"
+	read ADAP
+else 
+	# Default adapter is used
+	echo "I am using the default adapter(AGATCGGAA) for you."
+	ADAP=AGATCGGAA
+fi
+
+echo
 
 # Create log file
 echo "I will create a cutadapt log file for this analysis that you can find in $RESPATH directory"
@@ -665,6 +682,9 @@ case $ANSWER in
 			done
 							
 			if [ $Assign = "y" ]; then
+				#calling function for reference genome
+				GetRefGene
+				
 				#Calling function for VCF
 				Vcf_func
 				
