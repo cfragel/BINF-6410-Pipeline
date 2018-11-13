@@ -57,6 +57,8 @@ sabre pe -f $DATA -b $BARCODE -u unk.fastq
 
 exec >/dev/tty
 echo
+echo "Great you completed SABRE for pair end read files."
+echo
 }
 
 #############FUNCTION FOR SABRE (SINGLE END READS)##################
@@ -73,6 +75,8 @@ exec &> sabre_se.log
 sabre se -f $DATA -b $BARCODE -u unk.fastq
 
 exec >/dev/tty
+echo
+echo "Great you completed SABRE for single end read files."
 echo
 }
 
@@ -98,6 +102,9 @@ parallel -j $CPU cutadapt -a $ADAP -m 50 -o {}.fastq {}.fq ::: $(ls -1 *.fq | se
 
 exec >/dev/tty
 echo
+echo "You completed this step." 
+echo "$name, you are doing a great job."
+echo
 }
 
 ##########FUNCTION FOR MAPPING################
@@ -117,6 +124,8 @@ parallel -j $CPU bwa mem -t $THR $REF {}.fastq ">" {}.sam ::: $(ls -1 *.fastq | 
 			exit 1
 		fi
 exec >/dev/tty
+echo
+echo "Great! this step is completed."
 echo
 }
 
@@ -160,17 +169,18 @@ for i in $(ls -1 *.sort.bam)
 # Well All steps are completed			
 exec >/dev/tty
 echo
+echo "$name, you completed conversion from SAM to BAM."
+echo
 }
 
 ############FUNCTION FOR VCF##############
 
 Vcf_func () {
-echo "Starting variant Calling!"
+echo "Start VCF!"
 OUT=variantcalling
 
 # create a log file
-echo "I will create a sam_var
-log file for this analysis that you can find in $RESPATH directory"
+echo "I will create a sam_var log file for this analysis that you can find in $RESPATH directory"
 exec &> samt_var.log
 
 #Running the program 
@@ -190,6 +200,8 @@ bcftools call -mv variants.bcf > variants.vcf
 		
 exec >/dev/tty
 echo
+echo "$name, you got your VCF results as variant.vcf in $RESPATH directory."
+echo
 }
 
 ###################FUNCTION FOR TIME CALCULATION##############
@@ -199,11 +211,11 @@ echo "Ending time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
 echo
 ENDING_TIME=$(date -u +%s)
 ELAPSED_TIME="$[$ENDING_TIME-$STARTING_TIME]"
-echo "The Elapsed time is: $ELAPSED_TIME seconds"
-echo "or"
-echo $(convertsecs $ELAPSED_TIME)
+echo "The Elapsed time is:"
+echo "$ELAPSED_TIME seconds or $(convertsecs $ELAPSED_TIME) "
 echo
 echo "Thank you!! Hope you had a good time using our pipeline!!"
+echo
 }
 
 
@@ -226,6 +238,7 @@ echo " ##       ######### ## ### ## #####       ########   ##  ########  ###### 
 echo " ##       ##     ## ##     ## ##  ##      ##         ##  ##        ##       ##        ##  ##  #### ##       "
 echo " ##    ## ##     ## ##     ## ##   ##     ##         ##  ##        ##       ##        ##  ##   ### ##       "
 echo "  ######  ##     ## ##     ## ##    ##    ##        #### ##        ######## ######## #### ##    ## ######## "
+echo
 
 echo "CHMK Pipeline use sabre, cutadapt, bwa, samtools, bcftools"
 echo
@@ -260,7 +273,7 @@ echo
 
 #Choose the option according to your requirement to run pipeline.
 echo "Do you want to run the pipeline using the default options ... (y/n)"
-echo
+
 
 ANSWER=q
 until [ "$ANSWER" = "y" ] || [ "$ANSWER" = "n" ] 
@@ -271,7 +284,9 @@ done
 
 case $ANSWER in
 	y)
+		echo
 		echo "The default pipeline option is only for single end reads"
+		echo
 		#Assigning name to result directory
 		echo "Please assign a name for the Result directory where all your results will be saved"
 		read RESPATH
