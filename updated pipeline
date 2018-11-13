@@ -358,7 +358,7 @@ case $ANSWER in
 			echo
 			
 			echo "Do you want to run sabre for single end or pair end reads??..(s/p)"
-			echo
+
 			
 			READS=q
 			until [ "$READS" = "s" ] || [ "$READS" = "p" ] 
@@ -370,11 +370,13 @@ case $ANSWER in
 			
 				# Change path to store results by calling the variable containing the absolute path of the results directory
 				cd $resultpath1/$RESPATH
+				echo
 				#Calling function for sabre single end reads
 				Sabre_se
 			else 
 				# Change path to store results by calling the variable containing the absolute path of the results directory
 				cd $resultpath1/$RESPATH
+				echo
 				#Calling function for sabre pair end reads
 				Sabre_pe
 				
@@ -389,6 +391,7 @@ case $ANSWER in
 			
 			if [ $Answer1 = "Y" ]; then
 				#Calling function for cutadapt
+				echo
 				Cutadapt_func
 				
 				echo "Do you want to continue to do Mapping??...(Yes/No)"
@@ -411,7 +414,7 @@ case $ANSWER in
 					read Answer4
 					done
 					
-					if [ $Answer4 = "Yes" ]; then
+					if [ $Answer4 = "YES" ]; then
 						#Calling function for SAM to BAM conversion
 						Samtools_func
 							
@@ -508,7 +511,7 @@ case $ANSWER in
 					read Ans1
 					done
 					
-					if [ $Ans1 = "Yes" ]; then
+					if [ $Ans1 = "YES" ]; then
 						#Calling function for SAM to BAM conversion
 						Samtools_func
 							
@@ -589,7 +592,7 @@ case $ANSWER in
 				read Label
 			done
 					
-			if [ $Label = "Yes" ]; then
+			if [ $Label = "YES" ]; then
 				#Calling function for SAM to BAM conversion
 				Samtools_func
 							
