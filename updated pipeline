@@ -273,7 +273,7 @@ echo
 echo "Do you want to run the pipeline using the default options ... (y/n)"
 
 
-ANSWER=q
+read ANSWER
 until [ "$ANSWER" = "y" ] || [ "$ANSWER" = "n" ] 
 do
 	read ANSWER
@@ -333,14 +333,11 @@ case $ANSWER in
 		echo
 		echo "Please tell us the step you want to start with...(Sabre/Cutadapt/mapping/sam2bam/VCF)"
 		
-		STEP=q
+		read STEP
 		until [ "$STEP" = "Sabre" ] || [ "$STEP" = "Cutadapt" ] || [ "$STEP" = "mapping" ] || [ "$STEP" = "sam2bam" ] || [ "$STEP" = "VCF" ]
 		do
+			echo "Please give the correct option"
 			read STEP
-			if [ "$STEP" -ne "Sabre" || "Cutadappt" || "mapping" || "sam2bam" || "VCF" ]
-				then
-					echo "Please give the correct option"
-			fi
 		done
 		
 		case $STEP in
