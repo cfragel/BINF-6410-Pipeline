@@ -5,7 +5,7 @@ BINF 6410
 University of Guelph
 13 November 2018
 Karuna,Muskan,Christina,Hamed
-kvijayak, Muskan3195, cfragel, hzamankh
+GitHub id : kvijayak, Muskan3195, cfragel, hzamankh
 ```
 
 
