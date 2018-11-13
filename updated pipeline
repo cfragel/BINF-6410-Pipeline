@@ -206,12 +206,27 @@ echo
 echo "Thank you!! Hope you had a good time using our pipeline!!"
 }
 
+
+
+######################################################################################################
+
+
+
 ########STARTING OF PIPELINE##################
 echo
 echo "<==============Welcome to CHMK=================>"
 echo
 echo "This Pipeline made by Christina, Hamed, Muskan and Karuna as class assignment"
 echo
+
+echo "  ######  ##     ## ##     ## ##    ##    ########  #### ########  ######## ##       #### ##    ## ######## "
+echo " ##    ## ##     ## ###   ### ##   ##     ##     ##  ##  ##     ## ##       ##        ##  ###   ## ##       "
+echo " ##       ##     ## #### #### ##  ##      ##     ##  ##  ##     ## ##       ##        ##  ####  ## ##       "
+echo " ##       ######### ## ### ## #####       ########   ##  ########  ######   ##        ##  ## ## ## ######   "
+echo " ##       ##     ## ##     ## ##  ##      ##         ##  ##        ##       ##        ##  ##  #### ##       "
+echo " ##    ## ##     ## ##     ## ##   ##     ##         ##  ##        ##       ##        ##  ##   ### ##       "
+echo "  ######  ##     ## ##     ## ##    ##    ##        #### ##        ######## ######## #### ##    ## ######## "
+
 echo "CHMK Pipeline use sabre, cutadapt, bwa, samtools, bcftools"
 echo
 
