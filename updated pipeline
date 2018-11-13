@@ -42,24 +42,6 @@ echo
 
 }
 
-#############FUNCTION FOR SABRE (PAIR END READS)##################
-Sabre_pe() {
-
-echo "STARTING SABRE!(PAIR END)"
-
-# Create log file for this program
-echo "I will create a sabre log file for this analysis that you can find it in $RESPATH directory"
-exec &> sabre_pe.log
-
-
-# Run the program
-sabre pe -f $DATA -b $BARCODE -u unk.fastq
-
-exec >/dev/tty
-echo
-echo "Great you completed SABRE for pair end read files."
-echo
-}
 
 #############FUNCTION FOR SABRE (SINGLE END READS)##################
 Sabre_se() {
@@ -369,37 +351,22 @@ case $ANSWER in
 		
 			#Creating a directory for results
 			mkdir $RESPATH
+			
 			#Assigning the absolute path of the result directory to a variable
 			resultpath1=$PWD
-			echo "$name, I have created a new directory for your results. Its name is $RESPATH"
+			echo "$name, I have created a new directory for your results."
+			echo "Its name is $RESPATH whose path is $resultpath2"
 			echo
+		
+			# Change path to store results by calling the variable containing the absolute path of the results directory
+			cd $resultpath1/$RESPATH
 			
-			echo "Do you want to run sabre for single end or pair end reads??..(s/p)"
-
+			#Calling function for sabre single end reads
+			Sabre_se
 			
-			READS=q
-			until [ "$READS" = "s" ] || [ "$READS" = "p" ] 
-			do
-			read READS
-			done
-			
-			if [ $READS = "s" ]; then
-			
-				# Change path to store results by calling the variable containing the absolute path of the results directory
-				cd $resultpath1/$RESPATH
-				echo
-				#Calling function for sabre single end reads
-				Sabre_se
-			else 
-				# Change path to store results by calling the variable containing the absolute path of the results directory
-				cd $resultpath1/$RESPATH
-				echo
-				#Calling function for sabre pair end reads
-				Sabre_pe
-				
-			fi
 			
 			echo "Do you want to continue to cutadapt??...(Y/N)"
+			
 			Answer1=q
 			until [ "$Answer1" = "Y" ] || [ "$Answer1" = "N" ] 
 			do
