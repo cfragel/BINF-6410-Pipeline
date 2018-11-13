@@ -73,9 +73,10 @@ echo "Yes = Initializing adapter by user and No = Default adapter i.e AGATCGGAA"
 read Init
 until [ "$Init" = "Yes" ] || [ "$Init" = "No" ] 
 do
-echo "Enter the correct option Yes/No"
-read Init
+	echo "Enter the correct option Yes/No"
+	read Init
 done
+
 if [ $Init = "Yes" ]; then
 	#Initialize adapter sequence by user
 	echo "Please, enter the adapter of your choice"
@@ -251,6 +252,9 @@ echo
 echo "Nice to meet you $name, thank you for choosing CHMK Pipeline"
 echo
 
+echo "Please note that this pipeline will run only for single-end reads"
+echo
+
 echo "The Current time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
 echo
 
@@ -273,7 +277,6 @@ echo
 #Choose the option according to your requirement to run pipeline.
 echo "Do you want to run the pipeline using the default options ... (y/n)"
 
-
 read ANSWER
 until [ "$ANSWER" = "y" ] || [ "$ANSWER" = "n" ] 
 do
@@ -285,8 +288,6 @@ done
 case $ANSWER in
 	y)
 		echo
-		echo "The default pipeline option is only for single end reads"
-		echo
 		#Assigning name to result directory
 		echo "Please assign a name for the Result directory where all your results will be saved"
 		read RESPATH
@@ -296,7 +297,8 @@ case $ANSWER in
 		mkdir $RESPATH
 		#Assigning the absolute path of the result directory to a variable
 		resultpath=$PWD
-		echo "$name, I have created a new directory for your results. Its name is $RESPATH"
+		echo "$name, I have created a new directory for your results."
+		echo "Its name is $RESPATH and it is found in $resultpath"
 		echo
 		
 		# Change path to store results by calling the variable containing the absolute path of the results directory
@@ -331,8 +333,7 @@ case $ANSWER in
 		
 		;;
 	n)
-		echo "Please note that this option will run only for single end read files"
-		echo
+		
 		echo "Please tell us the step you want to start with...(Sabre/Cutadapt/mapping/sam2bam/VCF)"
 		
 		read STEP
