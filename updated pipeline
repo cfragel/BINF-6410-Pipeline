@@ -267,7 +267,6 @@ echo
 
 # TO show starting time of pipeline
 STARTING_TIME=$(date -u +%s)
-echo
 echo "Starting time: $(date +%Y-%m-%d_%Hh-%Mm-%Ss)"
 echo
 
@@ -324,6 +323,8 @@ case $ANSWER in
 		Vcf_func
 		
 		echo "$name, successfully completed."
+		echo
+		
 		###########CALLING FUNCTION FOR TIME CALCULATION#########
 		time_stats
 		
