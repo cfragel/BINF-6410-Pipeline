@@ -447,8 +447,8 @@ case $ANSWER in
 			# Change path
 			cd $NEWPATH
 			
-			# Move the .fq files to the results directory 
-			mv *.fq $resultpath2/$RESPATH
+			# copy the .fq files to the results directory 
+			cp *.fq $resultpath2/$RESPATH
 			
 			# Change path to result directory
 			cd $resultpath2/$RESPATH
@@ -538,8 +538,8 @@ case $ANSWER in
 			# Change path to .fastq files directory
 			cd $NEWPATH1
 			
-			# Move the .fastq files to the results directory 
-			mv *.fastq $resultpath3/$RESPATH
+			# copy the .fastq files to the results directory 
+			cp *.fastq $resultpath3/$RESPATH
 			
 			#Change path to result directory
 			cd $resultpath3/$RESPATH
@@ -613,8 +613,8 @@ case $ANSWER in
 			# Change path to .sam files directory
 			cd $NEWPATH2
 			
-			# Move the .sam files to the results directory 
-			mv *.sam $resultpath4/$RESPATH
+			# copy the .sam files to the results directory 
+			cp *.sam $resultpath4/$RESPATH
 			
 			#Change path to result directory
 			cd $resultpath4/$RESPATH
@@ -670,8 +670,8 @@ case $ANSWER in
 			# Change path to directory containing bamlist
 			cd $NEWPATH3
 			
-			# Move the bamlist to the results directory 
-			mv $bamlist $resultpath5/$RESPATH
+			# Copy the bamlist to the results directory 
+			cp $bamlist $resultpath5/$RESPATH
 			
 			#Change path to result directory
 			cd $resultpath5/$RESPATH
