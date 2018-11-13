@@ -671,11 +671,14 @@ case $ANSWER in
 			cd $NEWPATH3
 			
 			# Copy the bamlist to the results directory 
-			cp $bamlist $resultpath5/$RESPATH
+			cp -r $bamlist $resultpath5/$RESPATH
 			
 			#Change path to result directory
 			cd $resultpath5/$RESPATH
 			mv $bamlist bamlist
+			
+			#calling function for reference genome
+			GetRefGene
 			
 			#Calling function for VCF
 			Vcf_func
