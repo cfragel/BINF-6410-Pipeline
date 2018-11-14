@@ -361,7 +361,7 @@ case $ANSWER in
 			#Assigning the absolute path of the result directory to a variable
 			resultpath1=$PWD
 			echo "$name, I have created a new directory for your results."
-			echo "Its name is $RESPATH whose path is $resultpath2"
+			echo "Its name is $RESPATH whose path is $resultpath1"
 			echo
 		
 			# Change path to store results by calling the variable containing the absolute path of the results directory
